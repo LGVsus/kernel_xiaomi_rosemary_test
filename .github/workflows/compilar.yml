@@ -43,12 +43,9 @@ jobs:
         export ARCH=arm64
         export SUBARCH=arm64
         export PATH="$GITHUB_WORKSPACE/clone-clang/bin:$PATH"
-
+        
         make O=out rosemary_defconfig
-        # Deshabilitar la opción que causa el conflicto
-        ./scripts/config --file out/.config -d CC_STACKPROTECTOR_STRONG
-
-        make -j$(nproc --all) O=out \
+        make -j$(nproc --all) O=out V=1 \
           CC=clang \
           CLANG_TRIPLE=aarch64-linux-gnu- \
           CROSS_COMPILE=aarch64-linux-gnu- \
