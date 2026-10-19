@@ -41,19 +41,13 @@ jobs:
     - name: Limpiar directorio de salida anterior
       run: rm -rf out
 
-    - name: Parchear Makefile de mtk-vcu para eliminar regla duplicada
+    - name: Parchear Makefile de mtk-vcu (eliminar duplicado en obj-)
       run: |
-        # Ruta al Makefile problemático
         VCU_MAKEFILE="drivers/media/platform/mtk-vcu/Makefile"
         
-        # Muestra el estado original (opcional, para depurar)
-        echo "--- Makefile original ---"
-        cat "$VCU_MAKEFILE"
+        # Reemplaza la línea obj- para que solo incluya el objeto compuesto mtk-vcu.o
+        sed -i 's|^obj-$(CONFIG_VIDEO_MEDIATEK_VCU) += mtk-vcu.o mtk_vcodec_mem.o$|obj-$(CONFIG_VIDEO_MEDIATEK_VCU) += mtk-vcu.o|' "$VCU_MAKEFILE"
         
-        # Elimina las líneas que contienen 'mtk-vcu-y' (la regla multi-objeto)
-        sed -i '/mtk-vcu-y/d' "$VCU_MAKEFILE"
-        
-        # Verifica el resultado
         echo "--- Makefile parcheado ---"
         cat "$VCU_MAKEFILE"
 
