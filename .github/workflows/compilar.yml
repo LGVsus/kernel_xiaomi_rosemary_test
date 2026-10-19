@@ -22,8 +22,8 @@ jobs:
 
     - name: Descargar Compilador (Clang de Google)
       run: |
-        # Usar Clang 12 (r416183b), compatible con kernels 4.14
-        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz"
+        # Usar Clang 11, compatible con kernels 4.14
+        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android11-release/clang-r383902b.tar.gz"
         wget --no-verbose "$CLANG_URL" -O clang.tar.gz
         mkdir -p clone-clang
         tar -xzf clang.tar.gz -C clone-clang
