@@ -50,7 +50,14 @@ jobs:
         
         # Usar LLVM=1 para forzar todo el toolchain de LLVM
         make -j$(nproc --all) O=out \
-          LLVM=1 \
+          CC=clang \
+          LD=ld.lld \
+          AR=llvm-ar \
+          NM=llvm-nm \
+          OBJCOPY=llvm-objcopy \
+          OBJDUMP=llvm-objdump \
+          STRIP=llvm-strip \
+          LLVM_IAS=1 \
           KCFLAGS="-Wno-error" \
           CLANG_TRIPLE=aarch64-linux-gnu- \
           CROSS_COMPILE=aarch64-linux-gnu- \
