@@ -1,25 +1,26 @@
 name: Compilar Kernel Local
 
 on:
-  workflow_dispatch: # Botón para activarlo manualmente
+  workflow_dispatch:
 
 jobs:
   build-kernel:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      
     steps:
       - name: Descargar el código fuente de mi Fork
-        uses: actions/checkout@v4 
+        uses: actions/checkout@v4
 
       - name: Compilar Kernel de Android
-        uses: dabyd64/Android-Kernel-Build-Action@main
+
+        uses: UtsavBalaji/Android-Kernel-Build-Action@main
         with:
-          # Al poner "." le indicas que use el código fuente que acabamos de descargar con 'checkout'
           kernel-url: . 
-          
           arch: arm64
-          # Confirmado: En las fuentes de rosemary el archivo se llama exactamente 'rosemary_defconfig'
           defconfig: rosemary_defconfig 
-          
           android-version: 12
           aosp-clang: true
           anykernel3: true
