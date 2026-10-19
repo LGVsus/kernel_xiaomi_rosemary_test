@@ -1,29 +1,49 @@
-name: Compilar Kernel Local
+name: Build
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-kernel:
-    runs-on: ubuntu-latest
-    
+  build:
+    runs-on: ubuntu-24.04
+
     permissions:
       contents: write
-      
+
     steps:
-      - name: Descargar el código fuente de mi Fork
-        uses: actions/checkout@v4
+    - name: Limpiar espacio y actualizar servidor
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential ccache flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
 
-      - name: Compilar Kernel de Android
+    - name: Descargar el código fuente de mi Fork
+      uses: actions/checkout@v4
 
-        uses: UtsavBalaji/Android-Kernel-Build-Action@main
-        with:
-          kernel-url: . 
-          arch: arm64
-          defconfig: rosemary_defconfig 
-          android-version: 12
-          aosp-clang: true
-          anykernel3: true
-          release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: escargar Compilador (Clang de Google)
+      run: |
+        git clone --depth=1 https://googlesource.com clone-clang
+        echo "COMPILER_PATH=$GITHUB_WORKSPACE/clone-clang" >> $GITHUB_ENV
+
+    - name: Compilar Kernel (MediaTek MT6785)
+      run: |
+        export ARCH=arm64
+        export SUBARCH=arm64
+        CLANG_DIR=$(ls -d clone-clang/clang-r* | head -n 1)
+        export PATH="$GITHUB_WORKSPACE/$CLANG_DIR/bin:$PATH"
+        
+        make O=out rosemary_defconfig
+        make -j$(nproc --all) O=out CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+
+    - name: Empaquetar Imagen del Kernel
+      run: |
+        cd out/arch/arm64/boot/
+        zip -r ../../../../kernel-rosemary-final.zip Image.gz-dtb || zip -r ../../../../kernel-rosemary-final.zip Image
+        
+    - name: Subir el Kernel Compilador a Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        files: kernel-rosemary-final.zip
+        tag_name: kernel-${{ github.run_number }}
+        name: Compilación Exitosa #${{ github.run_number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
