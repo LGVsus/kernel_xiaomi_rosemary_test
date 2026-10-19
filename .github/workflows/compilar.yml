@@ -49,7 +49,7 @@ jobs:
         ./scripts/config --file out/.config -d CC_STACKPROTECTOR_STRONG
         
         # Usar LLVM=1 para forzar todo el toolchain de LLVM
-        make -j1 O=out \
+        make -j$(nproc --all) O=out \
           LLVM=1 \
           KCFLAGS="-Wno-error=array-compare" \
           CLANG_TRIPLE=aarch64-linux-gnu- \
