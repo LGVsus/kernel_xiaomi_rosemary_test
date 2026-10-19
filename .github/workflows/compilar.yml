@@ -51,6 +51,7 @@ jobs:
         # Usar LLVM=1 para forzar todo el toolchain de LLVM
         make -j1 O=out \
           LLVM=1 \
+          KCFLAGS="-Wno-error=array-compare" \
           CLANG_TRIPLE=aarch64-linux-gnu- \
           CROSS_COMPILE=aarch64-linux-gnu- \
           CROSS_COMPILE_ARM32=arm-linux-gnueabi-
