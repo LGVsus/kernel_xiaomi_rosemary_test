@@ -28,17 +28,29 @@ jobs:
         mkdir -p clone-clang
         tar -xzf clang.tar.gz -C clone-clang
         echo "COMPILER_PATH=$GITHUB_WORKSPACE/clone-clang/bin" >> $GITHUB_ENV
+  
+    - name: Verificar compilador
+      run: |
+        export PATH="$GITHUB_WORKSPACE/clone-clang/bin:$PATH"
+        echo "--- Versión de Clang ---"
+        clang --version
+        echo "--- Prueba de bandera -fstack-protector-strong ---"
+        echo 'int main(void){return 0;}' > test.c
+        clang -fstack-protector-strong -c test.c -o test.o && echo "Bandera SOPORTADA" || echo "Bandera NO SOPORTADA"
 
     - name: Compilar Kernel (MediaTek MT6785)
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
-        # La carpeta bin está directamente en clone-clang
         export PATH="$GITHUB_WORKSPACE/clone-clang/bin:$PATH"
         
         make O=out rosemary_defconfig
-        make -j$(nproc --all) O=out CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-
+        make -j$(nproc --all) O=out \
+          CC=clang \
+          CLANG_TRIPLE=aarch64-linux-gnu- \
+          CROSS_COMPILE=aarch64-linux-gnu- \
+          CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+ 
     - name: Empaquetar Imagen del Kernel
       run: |
         cd out/arch/arm64/boot/
