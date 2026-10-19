@@ -19,10 +19,13 @@ jobs:
     - name: Descargar el código fuente de mi Fork
       uses: actions/checkout@v4
 
-    - name: escargar Compilador (Clang de Google)
+    - name: Descargar Compilador (Clang de Google)
       run: |
-        git clone --depth=1 https://googlesource.com clone-clang
-        echo "COMPILER_PATH=$GITHUB_WORKSPACE/clone-clang" >> $GITHUB_ENV
+        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r596125.tar.gz"
+        wget "$CLANG_URL" -O clang.tar.gz
+        mkdir -p clone-clang
+        tar -xzf clang.tar.gz -C clone-clang
+        echo "COMPILER_PATH=$GITHUB_WORKSPACE/clone-clang/bin" >> $GITHUB_ENV
 
     - name: Compilar Kernel (MediaTek MT6785)
       run: |
