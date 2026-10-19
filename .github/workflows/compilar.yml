@@ -45,8 +45,13 @@ jobs:
         export PATH="$GITHUB_WORKSPACE/clone-clang/bin:$PATH"
         
         make O=out rosemary_defconfig
+        
+        # Deshabilitar la opción que causa el conflicto con Clang
+        ./scripts/config --file out/.config -d CC_STACKPROTECTOR_STRONG
+        
         make -j$(nproc --all) O=out V=1 \
           CC=clang \
+          LD=ld.lld \
           CLANG_TRIPLE=aarch64-linux-gnu- \
           CROSS_COMPILE=aarch64-linux-gnu- \
           CROSS_COMPILE_ARM32=arm-linux-gnueabi-
