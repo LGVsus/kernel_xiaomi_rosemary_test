@@ -15,14 +15,15 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y bc bison build-essential ccache flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+        sudo apt-get install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
     - name: Descargar el código fuente de mi Fork
       uses: actions/checkout@v4
 
     - name: Descargar Compilador (Clang de Google)
       run: |
-        # Rama correcta para clang-r596125: main-kernel
-        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main-kernel/clang-r596125.tar.gz"
+        # Usar Clang 12 (r416183b), compatible con kernels 4.14
+        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz"
         wget --no-verbose "$CLANG_URL" -O clang.tar.gz
         mkdir -p clone-clang
         tar -xzf clang.tar.gz -C clone-clang
@@ -32,8 +33,8 @@ jobs:
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
-        CLANG_DIR=$(ls -d clone-clang/clang-r* | head -n 1)
-        export PATH="$GITHUB_WORKSPACE/$CLANG_DIR/bin:$PATH"
+        # La carpeta bin está directamente en clone-clang
+        export PATH="$GITHUB_WORKSPACE/clone-clang/bin:$PATH"
         
         make O=out rosemary_defconfig
         make -j$(nproc --all) O=out CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
