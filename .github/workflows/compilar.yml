@@ -37,7 +37,9 @@ jobs:
         echo "--- Prueba de bandera -fstack-protector-strong ---"
         echo 'int main(void){return 0;}' > test.c
         clang -fstack-protector-strong -c test.c -o test.o && echo "Bandera SOPORTADA" || echo "Bandera NO SOPORTADA"
-
+    - name: Desactivar actualización automática de firmware
+      run: |
+        sed -i 's/#define FTS_AUTO_UPGRADE_EN 1/#define FTS_AUTO_UPGRADE_EN 0/' drivers/input/touchscreen/mediatek/ft3418_i2c/focaltech_config.h
     - name: Compilar Kernel (MediaTek MT6785)
       run: |
         export ARCH=arm64
