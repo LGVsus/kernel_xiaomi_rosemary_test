@@ -21,8 +21,9 @@ jobs:
 
     - name: Descargar Compilador (Clang de Google)
       run: |
-        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r596125.tar.gz"
-        wget "$CLANG_URL" -O clang.tar.gz
+        # Rama correcta para clang-r596125: main-kernel
+        CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main-kernel/clang-r596125.tar.gz"
+        wget --no-verbose "$CLANG_URL" -O clang.tar.gz
         mkdir -p clone-clang
         tar -xzf clang.tar.gz -C clone-clang
         echo "COMPILER_PATH=$GITHUB_WORKSPACE/clone-clang/bin" >> $GITHUB_ENV
